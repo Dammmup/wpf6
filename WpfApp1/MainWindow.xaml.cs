@@ -25,112 +25,110 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string key = "ObxELfFr164BicsLjQI4hA==PtuJSMqFfpFZtPrr";
+        private string key = "wYLZJ6LIQ+eLJy+nBWKjUw==cQl9W74cLT2QvmoT";
         public MainWindow()
         {
             InitializeComponent();
-            img.Source = new BitmapImage(new Uri("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSc8L75nL48MTzvkkQ32xKx6kdlf_c1qdJznw&usqp=CAU"));
+           
         }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click_2(object sender, RoutedEventArgs e)
         {
             try
             {
-                string url= "https://www.boredapi.com/api/activity";
+                string countryName = tb.Text;
+                string url = $"https://api.api-ninjas.com/v1/country?name={countryName}";
+
                 using (HttpClient client = new HttpClient())
                 {
-                    var response = await client.GetAsync(url);
-                    if(response != null)
-                    {
-                        var jsonstring = await response.Content.ReadAsStringAsync();
-                        ActivityResponse res = JsonConvert.DeserializeObject<ActivityResponse>(jsonstring);
-                        MessageBox.Show(res.Activity);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-               
-            }
-        }
-
-        private async void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                string txt = tb.Text;
-                string url = "https://api.api-ninjas.com/v1/animals?name=" + txt;
-                using(HttpClient client = new HttpClient())
-                {
                     client.DefaultRequestHeaders.Add("X-Api-Key", key);
+
                     var response = await client.GetAsync(url);
-                    if(response != null)
+
+                    if (response != null)
                     {
                         var jsonString = await response.Content.ReadAsStringAsync();
-                        List<ApiNinjaAnimal> res = JsonConvert.DeserializeObject<List<ApiNinjaAnimal>>(jsonString);
-                        MessageBox.Show(res.First().Name );
+
+                        // Используйте List<CountryInfo> для десериализации массива объектов
+                        List<CountryInfo> countryInfoList = JsonConvert.DeserializeObject<List<CountryInfo>>(jsonString);
+
+                        if (countryInfoList.Count > 0)
+                        {
+                            // Выводим результаты на элементы XAML (в примере берется первый элемент из списка)
+                            cityName.Text = $"Страна: {countryInfoList[0].Name}";
+                            temperature.Text = $"Столица: {countryInfoList[0].Capital}";
+                        }
+                        else
+                        {
+                            MessageBox.Show("Страна не найдена");
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-
                 MessageBox.Show(ex.Message);
             }
         }
 
+     
 
-        public class WeatherData
+        public class CountryInfo
         {
             [JsonProperty("name")]
             public string Name { get; set; }
-            public MainData Main { get; set; }
-            public List<Weather> Weather { get; set; }
-        }
 
-        public class MainData
+            [JsonProperty("capital")]
+            public string Capital { get; set; }
+
+            // Добавьте другие свойства в соответствии с тем, что возвращает API о стране
+        }
+        public partial class Welcome
         {
-            public double Temp { get; set; }
+            public long Gdp { get; set; }
+            public double SexRatio { get; set; }
+            public long SurfaceArea { get; set; }
+            public double LifeExpectancyMale { get; set; }
+            public double Unemployment { get; set; }
+            public long Imports { get; set; }
+            public double HomicideRate { get; set; }
+            public Currency Currency { get; set; }
+            public string Iso2 { get; set; }
+            public double EmploymentServices { get; set; }
+            public double EmploymentIndustry { get; set; }
+            public double UrbanPopulationGrowth { get; set; }
+            public double SecondarySchoolEnrollmentFemale { get; set; }
+            public double EmploymentAgriculture { get; set; }
+            public string Capital { get; set; }
+            public double Co2Emissions { get; set; }
+            public double ForestedArea { get; set; }
+            public long Tourists { get; set; }
+            public long Exports { get; set; }
+            public double LifeExpectancyFemale { get; set; }
+            public double PostSecondaryEnrollmentFemale { get; set; }
+            public double PostSecondaryEnrollmentMale { get; set; }
+            public double PrimarySchoolEnrollmentFemale { get; set; }
+            public double InfantMortality { get; set; }
+            public double GdpGrowth { get; set; }
+            public long ThreatenedSpecies { get; set; }
+            public long Population { get; set; }
+            public double UrbanPopulation { get; set; }
+            public double SecondarySchoolEnrollmentMale { get; set; }
+            public string Name { get; set; }
+            public double PopGrowth { get; set; }
+            public string Region { get; set; }
+            public long PopDensity { get; set; }
+            public double InternetUsers { get; set; }
+            public double GdpPerCapita { get; set; }
+            public double Fertility { get; set; }
+            public double Refugees { get; set; }
+            public double PrimarySchoolEnrollmentMale { get; set; }
         }
 
-        public class Weather
+        public partial class Currency
         {
-            public string Main { get; set; }
-            public string Icon { get; set; }
+            public string Code { get; set; }
+            public string Name { get; set; }
         }
 
-        private async void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            double shir = double.Parse(lat.Text);
-            double dol = double.Parse(len.Text);
-            string url = "https://api.openweathermap.org/data/2.5/weather?lat=" + shir + "&lon=" + dol + "&appid=99b8bddba48b08ad938fecc4a018546b";
-            using (HttpClient client = new HttpClient())
-            {
-                HttpResponseMessage response = await client.GetAsync(url);
-
-                try
-                {
-
-                    string result = await response.Content.ReadAsStringAsync();
-                    WeatherData weatherData = JsonConvert.DeserializeObject<WeatherData>(result);
-
-                    string city = weatherData.Name;
-                    double temp = weatherData.Main.Temp;
-                    string weather = weatherData.Weather[0].Main;
-                    string iconUrl = "http://openweathermap.org/img/w/" + weatherData.Weather[0].Icon + ".png";
-
-                    cityName.Text = "Город: " + city;
-                    temperature.Text = "Температура: " + temp.ToString() + "°C";
-                    weatherDesc.Text = "Погода: " + weather;
-                    img1.Source = new BitmapImage(new Uri(iconUrl));
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-              
-            }
-        }
     }
 }
